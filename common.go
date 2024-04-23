@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"regexp"
 	"strconv"
@@ -53,6 +54,16 @@ func GetProcessNumber(text string) string {
 
 	processNumber := regexp.MustCompile(`\d{7}-\d{2}\.\d{4}\.\d{1}\.\d{2}\.\d{4}`).FindString(text)
 	return processNumber
+}
+
+// função para reindexar no ElasticSearch
+func reindexToElasticSearch(id string, model string) {
+	apiUrl := os.Getenv("API_URL")
+	if apiUrl == "" {
+		apiUrl = "http://localhost:3000/" // url da api local
+	}
+
+	http.Get(apiUrl + "reindex_to_elasticsearch/" + model + "/" + id)
 }
 
 // função para inserir um leilão no banco de dados
@@ -130,6 +141,8 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 				}
 			}
 		}
+
+		reindexToElasticSearch(strconv.Itoa(int(auction.Id)), "Auction")
 
 		return true
 	}
