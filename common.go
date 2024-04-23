@@ -3,11 +3,16 @@ package common
 import (
 	"fmt"
 	"log"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/ztrue/tracerr"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/gocolly/colly"
 )
@@ -51,10 +56,105 @@ func GetProcessNumber(text string) string {
 }
 
 // função para inserir um leilão no banco de dados
-func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Round) {
+func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Round) bool {
 	if auction != nil && property != nil && (rounds != nil && len(*rounds) > 0) {
-		// insere no banco de dados
+		// conecta ao banco de dados
+		db := ConnectToDatabase()
+		if db == nil {
+			return false
+		}
+
+		// insere a property
+		result := db.Clauses(clause.OnConflict{
+			Columns: []clause.Column{{Name: "street_name"}, {Name: "street_number"}, {Name: "neighborhood"}, {Name: "city"}, {Name: "usage_type"}, {Name: "size"}, {Name: "postal_code"}, {Name: "bedrooms"}, {Name: "bathroom"}, {Name: "garage"}},
+			DoUpdates: clause.AssignmentColumns([]string{
+				"bedrooms",
+				"size",
+				"garage",
+				"bathroom",
+				"floor",
+				"neighborhood",
+				"city",
+				"latitude",
+				"longitude",
+				"street_number",
+				"street_name",
+				"postal_code",
+				"updated_at",
+			}),
+		}).Create(&property)
+		if result.Error != nil {
+			return false
+		}
+
+		// insere a auction
+		auction.PropertyID = int(property.Id)
+		result = db.Clauses(clause.OnConflict{
+			Columns: []clause.Column{{Name: "origin"}, {Name: "external_id"}},
+			DoUpdates: clause.AssignmentColumns([]string{
+				"title",
+				"updated_at",
+				"external_url",
+				"auctioneer_comission",
+				"auctioneer_views",
+				"price_sold",
+				"qualified_users",
+				"status",
+				"description",
+				"views_count",
+			}),
+		}).Create(&auction)
+		if result.Error != nil {
+			return false
+		}
+
+		for _, round := range *rounds {
+
+			// insere o round
+			round.AuctionId = auction.Id
+			if !(round.RoundNumber == 0 && round.MinPrice == 0) {
+				result = db.Clauses(clause.OnConflict{
+					Columns: []clause.Column{{Name: "auction_id"}, {Name: "round_number"}},
+					DoUpdates: clause.AssignmentColumns([]string{
+						"discount",
+						"end_date",
+						"start_date",
+						"increment_value",
+						"min_price",
+						"round_number",
+						"updated_at",
+					}),
+				}).Create(&round)
+				if result.Error != nil {
+					return false
+				}
+			}
+		}
+
+		return true
 	}
+
+	return false
+}
+
+// conecta ao banco de dados
+func ConnectToDatabase() *gorm.DB {
+	fmt.Println("Conectando ao banco de dados...")
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		dsn = "postgres://postgres:postgres@localhost:5432/cardeal_app_development" // url do docker local
+	}
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		NowFunc: func() time.Time {
+			return time.Now().UTC()
+		},
+	})
+	if err != nil {
+		fmt.Println("Erro ao conectar ao banco de dados")
+	}
+
+	return db
 }
 
 // função para transformar texto em float
