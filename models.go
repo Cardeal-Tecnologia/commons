@@ -54,7 +54,7 @@ type Auction struct {
 	Description         string    `json:"description"`
 	ViewsCount          int       `json:"views_count"`
 	BidsCount           int       `json:"bids_count"`
-	PropertyID          int       `json:"property_id"`
+	PropertyID          uint      `json:"property_id"`
 	AppraisalValue      float64   `json:"appraisal_value"`
 	AuctionnerName      string    `json:"auctionner_name"`
 	Ocupation           string    `json:"ocupation"`
@@ -73,7 +73,7 @@ type Announcement struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	ExternalID  string    `json:"external_id"`
-	PropertyID  int       `json:"property_id"`
+	PropertyID  uint      `json:"property_id"`
 }
 
 // retorna um array de objetos {url: string, name: string}
