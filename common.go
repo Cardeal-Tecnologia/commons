@@ -100,7 +100,7 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 		}
 
 		// insere a auction
-		auction.PropertyID = int(property.Id)
+		auction.PropertyID = property.Id
 		result = db.Clauses(clause.OnConflict{
 			Columns: []clause.Column{{Name: "origin"}, {Name: "external_id"}},
 			DoUpdates: clause.AssignmentColumns([]string{
