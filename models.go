@@ -3,7 +3,7 @@ package common
 import "time"
 
 type Property struct {
-	Id           int       `json:"id"`
+	Id           uint      `json:"id"`
 	Bedrooms     int       `json:"bedrooms"`
 	Size         float64   `json:"size"`
 	Garage       int       `json:"garage"`
