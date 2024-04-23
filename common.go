@@ -1,74 +1,87 @@
 package common
 
-import "time"
+import (
+	"fmt"
+	"log"
+	"regexp"
+	"strconv"
+	"strings"
 
-type Property struct {
-	Id           int       `json:"id"`
-	Bedrooms     int       `json:"bedrooms"`
-	Size         float64   `json:"size"`
-	Garage       int       `json:"garage"`
-	Bathroom     int       `json:"bathroom"`
-	Floor        string    `json:"floor"`
-	Neighborhood string    `json:"neighborhood"`
-	City         string    `json:"city"`
-	State        string    `json:"state"`
-	Complement   string    `json:"complement"`
-	UsageType    string    `json:"usage_type"`
-	SizeUnit     string    `json:"size_unit"`
-	Latitude     string    `json:"latitude"`
-	Longitude    string    `json:"longitude"`
-	StreetNumber int       `json:"street_number"`
-	StreetName   string    `json:"street_name"`
-	PostalCode   string    `json:"postal_code"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	"github.com/ztrue/tracerr"
+
+	"github.com/gocolly/colly"
+)
+
+// função para extrair dominio de uma url
+// exemplo: https://www.google.com -> www.google.com
+func ExtractDomainList(urls []string) []string {
+	domains := []string{}
+	for _, url := range urls {
+		domain := strings.Replace(url, "https://", "", -1)
+		domain = strings.Replace(domain, "http://", "", -1)
+		domain = strings.Split(domain, "/")[0]
+		domains = append(domains, domain)
+	}
+	return domains
 }
 
-type Round struct {
-	Discount       float64   `json:"discount"`
-	IncrementValue float64   `json:"increment_value"`
-	MinPrice       float64   `json:"min_price"`
-	RoundNumber    int       `json:"round_number"`
-	StartDate      time.Time `json:"start_date"`
-	EndDate        time.Time `json:"end_date"`
-	AuctionId      uint      `json:"auction_id"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+// função pra visitar uma lista de urls e esperar a coleta terminar
+func VisitPageUrls(collector *colly.Collector, urls []string) {
+	for _, url := range urls {
+		collector.Visit(url)
+	}
+	collector.Wait()
 }
 
-type Auction struct {
-	Id                  uint      `json:"id"`
-	Title               string    `json:"title"`
-	CreatedAt           time.Time `json:"created_at"`
-	UpdatedAt           time.Time `json:"updated_at"`
-	ExternalID          string    `json:"external_id"`
-	ExternalUrl         string    `json:"external_url"`
-	Origin              string    `json:"origin"`
-	AuctioneerComission float64   `json:"auctioneer_comission"`
-	AuctioneerViews     int       `json:"auctioneer_views"`
-	PriceSold           float64   `json:"price_sold"`
-	QualifiedUsers      int       `json:"qualified_users"`
-	Status              string    `json:"status"`
-	Description         string    `json:"description"`
-	ViewsCount          int       `json:"views_count"`
-	BidsCount           int       `json:"bids_count"`
-	PropertyID          int       `json:"property_id"`
-	AuctionnerName      string    `json:"auctionner_name"`
-	Ocupation           string    `json:"ocupation"`
-	ProccessNumber      string    `json:"proccess_number"`
-	CurrentMinBid       float64   `json:"current_min_bid"`
+func MoneyStringToFloat(moneyString string) float64 {
+	moneyString = strings.Replace(moneyString, "R$", "", -1)
+	moneyString = strings.Replace(moneyString, ".", "", -1)
+	moneyString = strings.Replace(moneyString, ",", ".", -1)
+	moneyString = strings.TrimSpace(moneyString)
+	money, _ := strconv.ParseFloat(moneyString, 64)
+	return money
 }
 
-type Announcement struct {
-	Id          int       `json:"id"`
-	Description string    `json:"description"`
-	ExternalUrl string    `json:"external_url"`
-	Origin      string    `json:"origin"`
-	SalePrice   float64   `json:"sale_price"`
-	Status      string    `json:"status"`
-	Title       string    `json:"title"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	ExternalID  string    `json:"external_id"`
-	PropertyID  int       `json:"property_id"`
+func GetProcessNumber(text string) string {
+	// exemplo de texto: <b>processo: </b>1006075-64.2019.8.26.0554 asdasdasd
+	// exemplo de processo: 1006075-64.2019.8.26.0554
+
+	processNumber := regexp.MustCompile(`\d{7}-\d{2}\.\d{4}\.\d{1}\.\d{2}\.\d{4}`).FindString(text)
+	return processNumber
+}
+
+// função para inserir um leilão no banco de dados
+func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Round) {
+	if auction != nil && property != nil && (rounds != nil && len(*rounds) > 0) {
+		// insere no banco de dados
+	}
+}
+
+// função para transformar texto em float
+func StringToFloat(text string) float64 {
+	text = strings.Replace(text, ".", "", -1)
+	text = strings.Replace(text, ",", ".", -1)
+	text = strings.TrimSpace(text)
+	number, _ := strconv.ParseFloat(text, 64)
+	return number
+}
+
+func StringToInt(text string) int {
+	text = strings.TrimSpace(text)
+	number, _ := strconv.Atoi(text)
+	return number
+}
+
+// Função para tratar erros
+func HandleError() {
+
+	if err := recover(); err != nil {
+		e := tracerr.Wrap(err.(error))
+		frame := tracerr.StackTrace(e)
+		for index, f := range frame {
+			if index == 3 && e.Error() != "runtime error: invalid memory address or nil pointer dereference" {
+				log.Printf(fmt.Sprintf(" AI CE ME QUEBRA \n==========\n erro:	%s\n file: %s\n linha: %d\n funcao: %s\n==========\n", e.Error(), f.Path, f.Line, f.Func))
+			}
+		}
+	}
 }
