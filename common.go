@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
 	"strconv"
@@ -148,6 +149,36 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 	}
 
 	return false
+}
+
+// fazer upload de imagens na property
+func UploadImages(id uint, images []string) {
+	apiUrl := os.Getenv("API_URL")
+	if apiUrl == "" {
+		apiUrl = "http://localhost:3000/" // url da api local
+	}
+
+	for _, image := range images {
+		// encodar a url
+		image = url.QueryEscape(image)
+		http.Get(apiUrl + "upload_property_image/" + strconv.Itoa(int(id)) + "/" + image)
+	}
+}
+
+// fazer upload de attachments na auction
+func UploadAttachments(id uint, attachments []Attachment) {
+	apiUrl := os.Getenv("API_URL")
+	if apiUrl == "" {
+		apiUrl = "http://localhost:3000/" // url da api local
+	}
+
+	for _, attachment := range attachments {
+		// encodar a url
+		attachmentUrl := url.QueryEscape(attachment.Url)
+		attachmentName := url.QueryEscape(attachment.Name)
+
+		http.Get(apiUrl + "upload_auction_attachment/" + strconv.Itoa(int(id)) + "/" + attachmentUrl + "/" + attachmentName)
+	}
 }
 
 // conecta ao banco de dados

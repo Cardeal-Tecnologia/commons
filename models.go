@@ -26,6 +26,7 @@ type Property struct {
 }
 
 type Round struct {
+	Id             uint      `json:"id"`
 	Discount       float64   `json:"discount"`
 	IncrementValue float64   `json:"increment_value"`
 	MinPrice       float64   `json:"min_price"`
@@ -62,7 +63,7 @@ type Auction struct {
 }
 
 type Announcement struct {
-	Id          int       `json:"id"`
+	Id          uint      `json:"id"`
 	Description string    `json:"description"`
 	ExternalUrl string    `json:"external_url"`
 	Origin      string    `json:"origin"`
@@ -73,4 +74,10 @@ type Announcement struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 	ExternalID  string    `json:"external_id"`
 	PropertyID  int       `json:"property_id"`
+}
+
+// retorna um array de objetos {url: string, name: string}
+type Attachment struct {
+	Url  string
+	Name string
 }
