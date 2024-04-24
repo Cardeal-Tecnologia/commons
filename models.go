@@ -76,8 +76,15 @@ type Announcement struct {
 	PropertyID  uint      `json:"property_id"`
 }
 
-// retorna um array de objetos {url: string, name: string}
 type Attachment struct {
 	Url  string
 	Name string
+}
+
+type DataToInsertAuction struct {
+	Auction     *Auction
+	Property    *Property
+	Rounds      *[]Round
+	ImageUrls   []string
+	Attachments []Attachment
 }
