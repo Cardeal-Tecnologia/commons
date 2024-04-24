@@ -180,11 +180,13 @@ func UploadAttachments(id uint, attachments []Attachment) {
 }
 
 // conecta ao banco de dados
-func ConnectToDatabase() *gorm.DB {
+func ConnectToDatabase(dsn string) *gorm.DB {
 	fmt.Println("Conectando ao banco de dados...")
-	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		dsn = "postgres://postgres:postgres@localhost:5432/cardeal_app_development" // url do docker local
+		dsn = os.Getenv("DATABASE_URL")
+	}
+	if dsn == "" {
+		dsn = "postgresql://cardeal:cardeal@localhost:5433/cardeal" // url do docker local
 	}
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
