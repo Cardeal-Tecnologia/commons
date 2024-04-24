@@ -67,7 +67,7 @@ func reindexToElasticSearch(id string, model string) {
 }
 
 // função para inserir um leilão no banco de dados
-func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Round, db *gorm.DB) bool {
+func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Round, db *gorm.DB, imageUrls []string, attachments []Attachment) bool {
 	if auction != nil && property != nil {
 		if db == nil {
 			return false
@@ -140,7 +140,10 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 			}
 		}
 
+		// Pós processamento
 		reindexToElasticSearch(strconv.Itoa(int(auction.Id)), "Auction")
+		UploadImages(property.Id, imageUrls)
+		UploadAttachments(auction.Id, attachments)
 
 		return true
 	} else {
