@@ -141,9 +141,9 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 		}
 
 		// Pós processamento
-		reindexToElasticSearch(strconv.Itoa(int(auction.Id)), "Auction")
-		UploadImages(property.Id, imageUrls)
-		UploadAttachments(auction.Id, attachments)
+		go reindexToElasticSearch(strconv.Itoa(int(auction.Id)), "Auction")
+		go UploadImages(property.Id, imageUrls)
+		go UploadAttachments(auction.Id, attachments)
 
 		return true
 	} else {
