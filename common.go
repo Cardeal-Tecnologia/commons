@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"regexp"
 	"strconv"
@@ -159,9 +158,8 @@ func UploadImages(id uint, images []string) {
 	}
 
 	for _, image := range images {
-		// encodar a url
-		image = url.QueryEscape(image)
-		http.Get(apiUrl + "upload_property_image/" + strconv.Itoa(int(id)) + "/" + image)
+
+		http.Post(apiUrl+"upload_property_image/"+strconv.Itoa(int(id)), "application/json", strings.NewReader(`{"image_url": "`+image+`"}`))
 	}
 }
 
@@ -173,11 +171,8 @@ func UploadAttachments(id uint, attachments []Attachment) {
 	}
 
 	for _, attachment := range attachments {
-		// encodar a url
-		attachmentUrl := url.QueryEscape(attachment.Url)
-		attachmentName := url.QueryEscape(attachment.Name)
 
-		http.Get(apiUrl + "upload_auction_attachment/" + strconv.Itoa(int(id)) + "/" + attachmentUrl + "/" + attachmentName)
+		http.Post(apiUrl+"upload_auction_attachment/"+strconv.Itoa(int(id)), "application/json", strings.NewReader(`{"attachment_url": "`+attachment.Url+`", "attachment_name": "`+attachment.Name+`"}`))
 	}
 }
 
