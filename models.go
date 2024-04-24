@@ -85,6 +85,6 @@ type DataToInsertAuction struct {
 	Auction     *Auction
 	Property    *Property
 	Rounds      *[]Round
-	ImageUrls   []string
+	Images      []Attachment
 	Attachments []Attachment
 }

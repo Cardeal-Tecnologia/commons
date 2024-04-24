@@ -67,7 +67,7 @@ func reindexToElasticSearch(id string, model string) {
 }
 
 // função para inserir um leilão no banco de dados
-func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Round, db *gorm.DB, imageUrls []string, attachments []Attachment) bool {
+func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Round, db *gorm.DB, images []Attachment, attachments []Attachment) bool {
 	if auction != nil && property != nil {
 		if db == nil {
 			return false
@@ -142,7 +142,7 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 
 		// Pós processamento
 		go reindexToElasticSearch(strconv.Itoa(int(auction.Id)), "Auction")
-		go UploadImages(property.Id, imageUrls)
+		go UploadImages(property.Id, images)
 		go UploadAttachments(auction.Id, attachments)
 
 		return true
@@ -154,7 +154,7 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 }
 
 // fazer upload de imagens na property
-func UploadImages(id uint, images []string) {
+func UploadImages(id uint, images []Attachment) {
 	apiUrl := os.Getenv("API_URL")
 	if apiUrl == "" {
 		apiUrl = "http://localhost:3000/" // url da api local
@@ -162,7 +162,7 @@ func UploadImages(id uint, images []string) {
 
 	for _, image := range images {
 
-		http.Post(apiUrl+"upload_property_image/"+strconv.Itoa(int(id)), "application/json", strings.NewReader(`{"image_url": "`+image+`"}`))
+		http.Post(apiUrl+"upload_property_image/"+strconv.Itoa(int(id)), "application/json", strings.NewReader(`{"image_url": "`+image.Url+`", "image_name": "`+image.Name+`"}`))
 	}
 }
 
