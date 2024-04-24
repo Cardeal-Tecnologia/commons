@@ -16,8 +16,8 @@ type Property struct {
 	UsageType    string    `json:"usage_type"`
 	SizeUnit     string    `json:"size_unit"`
 	SqlNumber    string    `json:"sql_number"`
-	Latitude     string    `json:"latitude"`
-	Longitude    string    `json:"longitude"`
+	Latitude     float64   `json:"latitude"`
+	Longitude    float64   `json:"longitude"`
 	StreetNumber int       `json:"street_number"`
 	StreetName   string    `json:"street_name"`
 	PostalCode   string    `json:"postal_code"`
