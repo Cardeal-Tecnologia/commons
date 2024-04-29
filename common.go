@@ -62,7 +62,7 @@ func reindexToElasticSearch(id string, model string) {
 		apiUrl = "http://localhost:3000/" // url da api local
 	}
 
-	go http.Get(apiUrl + "reindex_to_elasticsearch/" + model + "/" + id)
+	http.Get(apiUrl + "reindex_to_elasticsearch/" + model + "/" + id)
 }
 
 // função para inserir um leilão no banco de dados
@@ -161,7 +161,7 @@ func UploadImages(id uint, images []Attachment) {
 
 	for _, image := range images {
 
-		go http.Post(apiUrl+"upload_property_image/"+strconv.Itoa(int(id)), "application/json", strings.NewReader(`{"image_url": "`+image.Url+`", "image_name": "`+image.Name+`"}`))
+		http.Post(apiUrl+"upload_property_image/"+strconv.Itoa(int(id)), "application/json", strings.NewReader(`{"image_url": "`+image.Url+`", "image_name": "`+image.Name+`"}`))
 	}
 }
 
@@ -174,7 +174,7 @@ func UploadAttachments(id uint, attachments []Attachment) {
 
 	for _, attachment := range attachments {
 
-		go http.Post(apiUrl+"upload_auction_attachment/"+strconv.Itoa(int(id)), "application/json", strings.NewReader(`{"attachment_url": "`+attachment.Url+`", "attachment_name": "`+attachment.Name+`"}`))
+		http.Post(apiUrl+"upload_auction_attachment/"+strconv.Itoa(int(id)), "application/json", strings.NewReader(`{"attachment_url": "`+attachment.Url+`", "attachment_name": "`+attachment.Name+`"}`))
 	}
 }
 
