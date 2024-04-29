@@ -36,7 +36,6 @@ func VisitPageUrls(collector *colly.Collector, urls []string) {
 	for _, url := range urls {
 		collector.Visit(url)
 	}
-	collector.Wait()
 }
 
 func MoneyStringToFloat(moneyString string) float64 {
