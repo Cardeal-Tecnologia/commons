@@ -74,22 +74,8 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 
 		// insere a property
 		result := db.Clauses(clause.OnConflict{
-			Columns: []clause.Column{{Name: "street_name"}, {Name: "street_number"}, {Name: "neighborhood"}, {Name: "city"}, {Name: "usage_type"}, {Name: "size"}, {Name: "postal_code"}, {Name: "bedrooms"}, {Name: "bathroom"}, {Name: "garage"}},
-			DoUpdates: clause.AssignmentColumns([]string{
-				"bedrooms",
-				"size",
-				"garage",
-				"bathroom",
-				"floor",
-				"neighborhood",
-				"city",
-				"latitude",
-				"longitude",
-				"street_number",
-				"street_name",
-				"postal_code",
-				"updated_at",
-			}),
+			Columns:   []clause.Column{{Name: "street_name"}, {Name: "street_number"}, {Name: "neighborhood"}, {Name: "city"}, {Name: "usage_type"}, {Name: "size"}, {Name: "postal_code"}, {Name: "bedrooms"}, {Name: "bathroom"}, {Name: "garage"}},
+			DoNothing: true,
 		}).Create(&property)
 		if result.Error != nil {
 			return false
@@ -99,14 +85,15 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 		auction.PropertyID = property.Id
 		result = db.Clauses(clause.OnConflict{
 			Columns: []clause.Column{{Name: "origin"}, {Name: "external_id"}},
+			Where:   clause.Where{Exprs: []clause.Expression{clause.Eq{Column: "status", Value: "pending"}}},
 			DoUpdates: clause.AssignmentColumns([]string{
 				"title",
 				"updated_at",
 				"external_url",
 				"auctioneer_comission",
-				"auctioneer_views",
 				"price_sold",
 				"qualified_users",
+				"current_min_bid",
 				"status",
 				"description",
 				"views_count",
@@ -117,21 +104,12 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 		}
 
 		for _, round := range *rounds {
-
 			// insere o round
 			round.AuctionId = auction.Id
 			if !(round.RoundNumber == 0 && round.MinPrice == 0) {
 				result = db.Clauses(clause.OnConflict{
-					Columns: []clause.Column{{Name: "auction_id"}, {Name: "round_number"}},
-					DoUpdates: clause.AssignmentColumns([]string{
-						"discount",
-						"end_date",
-						"start_date",
-						"increment_value",
-						"min_price",
-						"round_number",
-						"updated_at",
-					}),
+					Columns:   []clause.Column{{Name: "auction_id"}, {Name: "round_number"}},
+					DoNothing: true,
 				}).Create(&round)
 				if result.Error != nil {
 					return false
