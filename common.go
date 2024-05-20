@@ -84,7 +84,7 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 		// insere a auction
 		auction.PropertyID = property.Id
 		result = db.Clauses(clause.OnConflict{
-			Columns: []clause.Column{{Name: "origin"}, {Name: "external_id"}},
+			Columns: []clause.Column{{Name: "external_url"}},
 			Where:   clause.Where{Exprs: []clause.Expression{clause.Eq{Column: "auctions.status", Value: "pending"}}},
 			DoUpdates: clause.AssignmentColumns([]string{
 				"title",
