@@ -50,7 +50,7 @@ type Auction struct {
 	AuctioneerViews     int       `json:"auctioneer_views"`
 	PriceSold           float64   `json:"price_sold"`
 	QualifiedUsers      int       `json:"qualified_users"`
-	Status              string    `json:"status"`
+	InternalStatus      string    `json:"internal_status"`
 	Description         string    `json:"description"`
 	ViewsCount          int       `json:"views_count"`
 	BidsCount           int       `json:"bids_count"`
