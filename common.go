@@ -94,7 +94,7 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 				"price_sold",
 				"qualified_users",
 				"current_min_bid",
-				"status",
+				"internal_status",
 				"description",
 				"views_count",
 			}),
