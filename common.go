@@ -75,7 +75,9 @@ func InsertAuctionToDatabase(auction *Auction, property *Property, rounds *[]Rou
 		// insere a property
 		result := db.Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "street_name"}, {Name: "street_number"}, {Name: "neighborhood"}, {Name: "city"}, {Name: "usage_type"}, {Name: "size"}, {Name: "postal_code"}, {Name: "bedrooms"}, {Name: "bathroom"}, {Name: "garage"}},
-			DoNothing: true,
+			DoUpdates: clause.AssignmentColumns([]string{
+				"updated_at",
+			}),
 		}).Create(&property)
 		if result.Error != nil {
 			return false
