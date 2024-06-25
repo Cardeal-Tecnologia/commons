@@ -3,26 +3,28 @@ package common
 import "time"
 
 type Property struct {
-	Id           uint      `json:"id"`
-	Bedrooms     int       `json:"bedrooms"`
-	Size         float64   `json:"size"`
-	Garage       int       `json:"garage"`
-	Bathroom     int       `json:"bathroom"`
-	Floor        string    `json:"floor"`
-	Neighborhood string    `json:"neighborhood"`
-	City         string    `json:"city"`
-	State        string    `json:"state"`
-	Complement   string    `json:"complement"`
-	UsageType    string    `json:"usage_type"`
-	SizeUnit     string    `json:"size_unit"`
-	SqlNumber    string    `json:"sql_number"`
-	Latitude     float64   `json:"latitude"`
-	Longitude    float64   `json:"longitude"`
-	StreetNumber int       `json:"street_number"`
-	StreetName   string    `json:"street_name"`
-	PostalCode   string    `json:"postal_code"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	Id           			uint      `json:"id"`
+	Bedrooms     			int       `json:"bedrooms"`
+	Size         			float64   `json:"size"`
+	Garage       			int       `json:"garage"`
+	Bathroom     			int       `json:"bathroom"`
+	Floor        			string    `json:"floor"`
+	Neighborhood 			string    `json:"neighborhood"`
+	City         			string    `json:"city"`
+	State        			string    `json:"state"`
+	Complement   			string    `json:"complement"`
+	UsageType    			string    `json:"usage_type"`
+	SizeUnit     			string    `json:"size_unit"`
+	SqlNumber    			string    `json:"sql_number"`
+	Latitude     			float64   `json:"latitude"`
+	Longitude    			float64   `json:"longitude"`
+	StreetNumber 			int       `json:"street_number"`
+	StreetName   			string    `json:"street_name"`
+	PostalCode   			string    `json:"postal_code"`
+	CreatedAt    			time.Time `json:"created_at"`
+	UpdatedAt    			time.Time `json:"updated_at"`
+	Iptu				 			float64   `json:"iptu"`
+	CondominiumValue	float64   `json:"condominium"`
 }
 
 type Round struct {
